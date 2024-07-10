@@ -6,6 +6,7 @@
 ```
 BOT_TOKEN="{your telegram bot token}"
 CHAT_ID="{your telegram chat id}"
+CRON="{your cron schedule}" // ex) "*/5 * * * *" -> every 5 minutes
 ```
 
 ## Getting start
