@@ -1,6 +1,13 @@
 # LayerZero Prices Bot
 > This is price information for other chains confirmed in xpla’s layerzero relayer contract.
 
+## Environment
+> add .env
+```
+BOT_TOKEN="{your telegram bot token}"
+CHAT_ID="{your telegram chat id}"
+```
+
 ## Getting start
 > nodejs, pm2 required
 ```
