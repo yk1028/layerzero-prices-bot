@@ -38,13 +38,13 @@ const lzLayerPrice = async (name:string, rpc: string, relayerAddress: string, lz
     const web3 = new Web3(new Web3.providers.HttpProvider(rpc));
 
 
-    const endpoint = new web3.eth.Contract(PRICES_LOOKUP_ABI, relayerAddress) // relayer address
+    const endpoint = new web3.eth.Contract(PRICES_LOOKUP_ABI, relayerAddress)
 
-    const price = await endpoint.methods.dstPriceLookup(lzChainID).call() //ua address
+    const price = await endpoint.methods.dstPriceLookup(lzChainID).call()
 
     return `  (${name})
       ratio:  ${price.dstPriceRatio}
-      price:  ${parseFloat(price.dstGasPriceInWei) / 1000000000} wei`
+      price:  ${parseFloat(price.dstGasPriceInWei) / 1000000000} Gwei`
 }
 
 const getLzPrices = async () => {
@@ -55,21 +55,32 @@ const getLzPrices = async () => {
     const sepolia = await lzLayerPrice("Sepolia", "https://cube-evm-rpc.xpla.dev/", "0x35AdD9321507A87471a11EBd4aE4f592d531e620", 10161)
     // const bnbtestnet = await lzLayerPrice("Bsc-testnet", "https://cube-evm-rpc.xpla.dev/", "0xc0eb57BF242f8DD78a1AAA0684b15FAda79B6F85", 10102)
 
-    return `${time}\n[Mainnet]\n${ethereum}\n[Testnet]\n${sepolia}`
+    return `${time}\n[Mainnet]\n${ethereum}\n\n[Testnet]\n${sepolia}`
 }
 
 const telegram_bot = async () => {
+
+    console.log("telegram bot start!")
+
     const { Telegraf } = require('telegraf')
     const cron = require('node-cron')
 
     const bot = new Telegraf(process.env.BOT_TOKEN)
 
-    bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-    bot.hears('p', async (ctx) => ctx.reply(`${await getLzPrices()}`))
+    bot.hears('hi', (ctx) => { 
+        console.log("hears: hi")
+        ctx.reply('Hey there')
+    })
 
+    bot.hears('p', async (ctx) => {
+        console.log("hears: p")
+        ctx.reply(`${await getLzPrices()}`)
+    })
 
     cron.schedule('*/5 * * * *', async () => {
-        await bot.telegram.sendMessage(process.env.CHAT_ID, `${await getLzPrices()}`)
+        const prices = await getLzPrices()
+        console.log(prices)
+        await bot.telegram.sendMessage(process.env.CHAT_ID, `${prices}`)
     });
 
     bot.launch()
