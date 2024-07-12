@@ -1,17 +1,18 @@
 import 'dotenv/config'
 import Web3 from 'web3';
 import * as emoji from 'node-emoji'
+import Contract from 'web3-eth-contract';
 
 class LzEndpoint {
 
     private static HOLD = " - "
-    private static UP_ARROW = emoji.get('small_red_triangle')
-    private static DOWN_ARROW = emoji.get('small_red_triangle_down')
+    private static UP = emoji.get('red_circle')
+    private static DOWN = emoji.get('large_blue_circle')
 
     private name: string
     private lzChainId: number
-    private endpoint
-    private prePrice
+    private endpoint: Contract
+    private prePrice: number = .0
 
     constructor(name: string, lzChainId: number, rpc: string, relayerAddress: string) {
 
@@ -44,8 +45,6 @@ class LzEndpoint {
             "stateMutability": "view",
             "type": "function"
         },], relayerAddress)
-
-        this.prePrice = .0
     }
 
     public async getLzLayerPrice() {
@@ -76,9 +75,9 @@ class LzEndpoint {
         if (diff == 0) {
             return LzEndpoint.HOLD
         } else if (diff < 0) {
-            return `${LzEndpoint.DOWN_ARROW} ${diffp}%`
+            return `${LzEndpoint.DOWN} ${diffp}%`
         } else {
-            return `${LzEndpoint.UP_ARROW} ${diffp}%`
+            return `${LzEndpoint.UP} ${diffp}%`
         }
     }
 }
